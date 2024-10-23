@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recherche Fini / Semi Fini</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            padding: 20px;
+            margin: 0;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #0056b3;
+        }
+        select, input[type="text"] {
+            width: calc(100% - 24px);
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px;
+            width: 100%;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .table-container {
+            margin-top: 20px;
+            height: 200px;
+            overflow-y: auto; /* Enable scrolling */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+            font-size: 16px;
+            width: 50%;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        .highlight {
+            background-color: #ffeb3b;
+        }
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+        }
+
+        /* Media query for mobile devices */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            h1 {
+                font-size: 20px;
+            }
+            select, input[type="text"], button {
+                font-size: 14px;
+                padding: 10px;
+            }
+            th, td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Recherche Référence Fini / Référence Semi Fini</h1>
+
+        <!-- Dropdown for selecting the type of number -->
+        <select id="searchType">
+            <option value="fini">Chercher par Référence Fini</option>
+            <option value="semiFini">Chercher par Référence Semi Fini</option>
+        </select>
+
+        <!-- Input for entering the number (now text input for both letters and numbers) -->
+        <input type="text" id="inputNumber" placeholder="Entrez la référence" oninput="this.value = this.value.toUpperCase();">
+        
+        <button onclick="lookup()">Rechercher</button>
+
+        <!-- Scrollable Table to display the result -->
+        <div class="table-container">
+            <table id="resultTable">
+                <thead>
+                    <tr>
+                        <th>Référence Fini</th>
+                        <th>Référence Semi Fini</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Table content will be dynamically generated here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; <span id="year"></span> Amine Ben Nasr. Tous droits réservés.</p>
+    </footer>
+
+    <script>
+        // Sample data (replace this with your actual table)
+        const data = [
+        { semiFini: 25037703, fini: 29178103 },
+        { semiFini: 25057101, fini: 29191201 },
+        { semiFini: 25058504, fini: 29192404 },
+        { semiFini: 25066803, fini: 29196903 },
+        { semiFini: 25068401, fini: 29198501 },
+        { semiFini: 25073004, fini: 29202604 },
+        { semiFini: 25073204, fini: 29202804 },
+        { semiFini: 25073304, fini: 29202904 },
+        { semiFini: 25073404, fini: 29203004 },
+        { semiFini: 25078402, fini: 29204003 },
+        { semiFini: 25136302, fini: 29241904 },
+        { semiFini: 25136404, fini: 29242005 },
+        { semiFini: 25136602, fini: 29242202 },
+        { semiFini: 25138703, fini: 29246103 },
+        { semiFini: 25147408, fini: 29252210 },
+        { semiFini: 25147408, fini: 29254309 },
+        { semiFini: 25150903, fini: 29255902 },
+        { semiFini: 25234401, fini: 29297402 },
+        { semiFini: 25234501, fini: 29297502 },
+        { semiFini: 25073108, fini: 29303701 },
+        { semiFini: 25249701, fini: 29305301 },
+        { semiFini: 25042804, fini: 29183004 },
+        { semiFini: 25043005, fini: 29183205 },
+        { semiFini: 25045503, fini: 29184904 },
+        { semiFini: 25059702, fini: 29193102 },
+        { semiFini: 25066102, fini: 29196202 },
+        { semiFini: 25072603, fini: 29202403 },
+        { semiFini: 25072903, fini: 29202503 },
+        { semiFini: 25001400, fini: 29128900 },
+        { semiFini: 25006902, fini: 29144101 },
+        { semiFini: 25026003, fini: 29154804 },
+        { semiFini: 25016003, fini: 29164303 },
+        { semiFini: 25036302, fini: 29177302 },
+        { semiFini: 25043305, fini: 29183505 },
+        { semiFini: 25050404, fini: 29186704 },
+        { semiFini: 25050504, fini: 29186806 },
+        { semiFini: 25050604, fini: 29186904 },
+        { semiFini: 25051701, fini: 29188102 },
+        { semiFini: 25057303, fini: 29191403 },
+        { semiFini: 25066304, fini: 29196407 },
+        { semiFini: 25067703, fini: 29197903 },
+        { semiFini: 25069002, fini: 29199105 },
+        { semiFini: 25076501, fini: 29206301 },
+        { semiFini: 25089602, fini: 29212503 },
+        { semiFini: 25110303, fini: 29228204 },
+        { semiFini: 25110402, fini: 29228303 },
+        { semiFini: 25110502, fini: 29228402 },
+        { semiFini: 25104303, fini: 29230004 },
+        { semiFini: 25128705, fini: 29237204 },
+        { semiFini: 25131601, fini: 29238501 },
+        { semiFini: 25139607, fini: 29246807 },
+        { semiFini: 25140702, fini: 29248802 },
+        { semiFini: 25148102, fini: 29252603 },
+        { semiFini: 25148202, fini: 29252702 },
+        { semiFini: 25152803, fini: 29257304 },
+        { semiFini: 25165401, fini: 29264401 },
+        { semiFini: 25187006, fini: 29273006 },
+        { semiFini: 25187006, fini: 29273106 },
+        { semiFini: 25204103, fini: 29278003 },
+        { semiFini: 25201103, fini: 29278202 },
+        { semiFini: 25205001, fini: 29281301 },
+        { semiFini: 25208702, fini: 29283003 },
+        { semiFini: 25208404, fini: 29283204 },
+        { semiFini: 25209603, fini: 29284903 },
+        { semiFini: 25219203, fini: 29286504 },
+        { semiFini: 25221902, fini: 29288205 },
+        { semiFini: 25221805, fini: 29288310 },
+        { semiFini: 25229203, fini: 29291903 },
+        { semiFini: 25230303, fini: 29292603 },
+        { semiFini: 25233603, fini: 29296603 },
+        { semiFini: 25075302, fini: 29204603 },
+        { semiFini: 25081403, fini: 29205609 },
+        { semiFini: 25071503, fini: 29211403 },
+        { semiFini: 25088903, fini: 29211703 },
+        { semiFini: 25093301, fini: 29214502 },
+        { semiFini: 25093401, fini: 29214603 },
+        { semiFini: 25093503, fini: 29214703 },
+        { semiFini: 25102404, fini: 29221104 },
+        { semiFini: 25111302, fini: 29229002 },
+        { semiFini: 25138006, fini: 29243905 },
+        { semiFini: 25144302, fini: 29250004 },
+        { semiFini: 25193606, fini: 29271907 },
+        { semiFini: 25182308, fini: 29272009 },
+        { semiFini: 25233503, fini: 29296503 },
+        { semiFini: 25238102, fini: 29299503 },
+        { semiFini: 25240901, fini: 29301701 },
+        { semiFini: 25253102, fini: 29306101 },
+        { semiFini: 25253202, fini: 29306201 },
+        { semiFini: 25253503, fini: 29306501 },
+        { semiFini: 25270202, fini: 29314102 },
+        { semiFini: 25011400, fini: 30295101 },
+        { semiFini: 25128705, fini: "29237204B" },
+        { semiFini: 25289102, fini: "29237204B" },
+        { semiFini: 25057303, fini: "29191403D" },
+        { semiFini: 25006902, fini: 29144101 },
+        { semiFini: 25234201, fini: 29297101 },
+        { semiFini: 25229103, fini: 29291803 },
+        { semiFini: 25166401, fini: 29265402 },
+        { semiFini: 25167101, fini: 29266002 },
+        { semiFini: 25169303, fini: 29267405 },
+        { semiFini: 25187201, fini: 29273201 },
+        { semiFini: 25194203, fini: 29276402 },
+        { semiFini: 25206207, fini: 29282608 },
+        { semiFini: 25206306, fini: 29282707 },
+        { semiFini: 25206406, fini: 29282807 },
+        { semiFini: 25219004, fini: 29285504 },
+        { semiFini: 25212402, fini: 29285702 },
+        { semiFini: 25221302, fini: 29288601 },
+        { semiFini: 25222505, fini: 29289604 }
+        ];
+
+        // Function to display all data by default
+        function displayAllData() {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = ''; // Clear previous content
+
+            data.forEach(entry => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${entry.fini}</td><td>${entry.semiFini}</td>`;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Function to perform the lookup based on user selection
+        function lookup() {
+            const searchType = document.getElementById('searchType').value;
+            const inputNumber = document.getElementById('inputNumber').value;
+            const tableBody = document.getElementById('tableBody');
+
+            // Clear previous results
+            tableBody.innerHTML = '';
+
+            // Variable to track the position of the matched row
+            let scrollToRow = null;
+
+            // Loop through the data and generate table rows
+            data.forEach(entry => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${entry.fini}</td><td>${entry.semiFini}</td>`;
+
+                // Highlight the matching row based on user input and track it
+                if (searchType === 'fini' && entry.fini == inputNumber) {
+                    row.classList.add('highlight');
+                    scrollToRow = row; // Track the row to scroll to
+                } else if (searchType === 'semiFini' && entry.semiFini == inputNumber) {
+                    row.classList.add('highlight');
+                    scrollToRow = row; // Track the row to scroll to
+                }
+
+                tableBody.appendChild(row);
+            });
+
+            // Scroll to the matched row if it exists
+            if (scrollToRow) {
+                scrollToRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // Set the current year in the footer
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Display all data on page load
+        window.onload = displayAllData;
+    </script>
+
+</body>
+</html>
