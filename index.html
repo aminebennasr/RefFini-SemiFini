@@ -63,15 +63,18 @@
         table, th, td {
             border: 1px solid #ddd;
         }
+        th {
+            background-color: #007bff;
+            color: white;
+            position: sticky; /* Make header sticky */
+            top: 0; /* Position it at the top */
+            z-index: 10; /* Ensure it is above other elements */
+        }
         th, td {
             padding: 12px;
             text-align: center;
             font-size: 16px;
             width: 50%;
-        }
-        th {
-            background-color: #007bff;
-            color: white;
         }
         .highlight {
             background-color: #ffeb3b;
